@@ -7,9 +7,6 @@ const countsLength = function (text, characters) {
   return false;
 };
 
-console.log('Ответ 1 функции:')
-console.log(countsLength('sdasfafsdfsfdsfd', 10));
-
 // 2 функция
 const checksPolyndrome = function (text) {
   text = text.replaceAll(' ', '');
@@ -22,10 +19,6 @@ const checksPolyndrome = function (text) {
   }
   return false;
 };
-
-console.log('Ответ 2 функции:')
-console.log(checksPolyndrome('лёша на полке клопа нашёл'));
-
 
 // 3 функция
 const extractsNumbers = function (text) {
@@ -41,9 +34,6 @@ const extractsNumbers = function (text) {
   numberNotext = numberNotext.replaceAll(' ', '');
   return numberNotext;
 };
-
-console.log('Ответ 3 функции:')
-console.log(extractsNumbers('4 ty345 gh6'));
 
 // 4 функция
 const addLetters = function (initialCharacter, minLenght, addLine) {
@@ -61,5 +51,4 @@ const addLetters = function (initialCharacter, minLenght, addLine) {
   return textSupplement + initialCharacter;
 };
 
-console.log('Ответ 4 функции:')
-console.log(addLetters('2drf34', '11', '28'));
+
