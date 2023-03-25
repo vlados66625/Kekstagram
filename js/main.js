@@ -1,1 +1,2 @@
-import './description-photo';
+import './description-photo.js';
+import './picture.js';

@@ -1,5 +1,5 @@
-import {numberPhoto, descriptions, names,commentText} from './data';
-import {getRandomInteger} from './random-integer';
+import {numberPhoto, descriptions, names,commentText} from './data.js';
+import {getRandomInteger} from './random-integer.js';
 
 let identifier;
 let identifierComment;
@@ -62,5 +62,4 @@ const descriptionPhoto = () => ({
 
 const descriptionPhotoAll = Array.from({ length: numberPhoto }, descriptionPhoto);
 
-console.log(descriptionPhotoAll);
-// console.log(getIdentifier);
+export {descriptionPhotoAll};
