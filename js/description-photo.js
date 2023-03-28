@@ -1,5 +1,5 @@
 import {numberPhoto, descriptions, names,commentText} from './data.js';
-import {getRandomInteger} from './random-integer.js';
+import {getRandomInteger} from './util.js';
 
 let identifier;
 let identifierComment;
@@ -57,7 +57,7 @@ const descriptionPhoto = () => ({
   url: `photos/${String(identifier)}.jpg`,
   description: descriptions[identifier - 1],
   likes: getRandomInteger(15, 200),
-  comments: Array.from({length: getRandomInteger(1, 5)}, createComment)
+  comments: Array.from({length: getRandomInteger(1, 13)}, createComment)
 });
 
 const descriptionPhotoAll = Array.from({ length: numberPhoto }, descriptionPhoto);
