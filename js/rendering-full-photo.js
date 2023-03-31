@@ -1,6 +1,6 @@
 import { isEscapeKey } from './util.js';
 
-const body = document.querySelector('body');
+export const body = document.querySelector('body');
 const bigPicture = document.querySelector('.big-picture');
 const bigPictureImg = bigPicture
   .querySelector('.big-picture__img')
@@ -31,8 +31,8 @@ let thisComments;
 
 const addComment = (data) => {
   const commentItem = bigPictureComment.cloneNode(true);
-  const commentItemImg = bigPictureComment.querySelector('img');
-  const commentItemP = bigPictureComment.querySelector('p');
+  const commentItemImg = commentItem.querySelector('.social__picture');
+  const commentItemP = commentItem.querySelector('.social__text');
   commentItemImg.src = data.avatar;
   commentItemImg.alt = data.name;
   commentItemP.textContent = data.message;
@@ -42,7 +42,7 @@ const addComment = (data) => {
 const loadingComments = () => {
   const commentsWill = commentDownload + 5;
   const newComment = (commentDownloads) => addComment(thisComments[commentDownloads]);
-  if (commentsWill > numberCommentAll) {
+  if (commentsWill >= numberCommentAll) {
     while (commentDownload < numberCommentAll) {
       bigPictureCommentsList.appendChild(newComment(commentDownload));
       commentDownload++;

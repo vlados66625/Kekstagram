@@ -1,6 +1,8 @@
 import { descriptionPhotoAll } from './description-photo.js';
 import { createPicture } from './picture.js';
 import { bigPictureOpen } from './rendering-full-photo.js';
+import { uploadFileInput, openForm } from './form.js';
+import './scale-image.js';
 
 const picturesFragment = document.createDocumentFragment();
 
@@ -16,3 +18,5 @@ descriptionPhotoAll.forEach((data) => {
 });
 
 listPictures.appendChild(picturesFragment);
+
+uploadFileInput.addEventListener('change', openForm);
