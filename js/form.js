@@ -1,11 +1,22 @@
 import { body } from './rendering-full-photo.js';
 import { isEscapeKey } from './util.js';
 export const uploadFileInput = document.querySelector('#upload-file');
-export const editFormPopup = document.querySelector('.img-upload__overlay');
+const editFormPopup = document.querySelector('.img-upload__overlay');
 const closeFormButton = editFormPopup.querySelector('#upload-cancel');
 const imgForm = document.querySelector('.img-upload__form');
 const hashtag = imgForm.querySelector('.text__hashtags');
 const commentPhoto = imgForm.querySelector('.text__description');
+// scale
+const scaleSmallerButton = editFormPopup.querySelector('.scale__control--smaller');
+const scaleBiggerButton = editFormPopup.querySelector('.scale__control--bigger');
+const imgUploadPreview = document.querySelector('.img-upload__preview').querySelector('img');
+const scaleValue = editFormPopup.querySelector('.scale__control--value');
+let scale = 100;
+// effect-slider
+const sliderContainer = document.querySelector('.img-upload__effect-level');
+const effectsValue = sliderContainer.querySelector('.effect-level__value');
+const sliderElement = sliderContainer.querySelector('.effect-level__slider');
+const effectsRadioButtonAll = document.querySelectorAll('.effects__radio');
 
 const hashtagValid = /^#[a-zа-яё0-9]{1,19}$/i;
 
@@ -16,12 +27,35 @@ const closesPressingEsc = (evt) => {
   }
 };
 
+const scaleSmaller = () => {
+  if ((scale >= 50) && (scale <= 100)) {
+    scale -= 25;
+  }
+  imgUploadPreview.style.transform = `scale(${scale * 0.01})`;
+  scaleValue.value = `${scale}%`;
+};
+
+
+const scaleBigger = () => {
+  if ((scale >= 0) && (scale <= 75)) {
+    scale += 25;
+  }
+  imgUploadPreview.style.transform = `scale(${scale * 0.01})`;
+  scaleValue.value = `${scale}%`;
+};
+
 function closeForm() {
+  scale = 100;
+  imgUploadPreview.className = '';
+  imgUploadPreview.style.filter = 'none';
+  sliderElement.classList.add('visually-hidden');
   editFormPopup.classList.add('hidden');
   body.classList.remove('modal-open');
   imgForm.reset();
   closeFormButton.removeEventListener('click', closeForm);
   document.removeEventListener('keydown', closesPressingEsc);
+  scaleBiggerButton.removeEventListener('click', scaleBigger);
+  scaleSmallerButton.removeEventListener('click', scaleSmaller);
 }
 
 export const openForm = () => {
@@ -47,6 +81,9 @@ export const openForm = () => {
 
   canselsHandlerEsc(hashtag);
   canselsHandlerEsc(commentPhoto);
+
+  scaleBiggerButton.addEventListener('click', scaleBigger);
+  scaleSmallerButton.addEventListener('click', scaleSmaller);
 };
 
 uploadFileInput.addEventListener('change', openForm);
@@ -78,10 +115,7 @@ const checksValidRepeat = () => {
 
 const checksValidQuantity = () => {
   const arrayHashtag = hashtag.value.trim().split(' ');
-  if (arrayHashtag.length <= 5) {
-    return true;
-  }
-  return false;
+  return arrayHashtag.length <= 5;
 };
 
 const pristine = new Pristine(imgForm, {
@@ -112,3 +146,111 @@ pristine.addValidator(
   'Максимальная длина комментария - 140 символов'
 );
 
+// slider
+
+noUiSlider.create(sliderElement, {
+  range: {
+    min: 0,
+    max: 1,
+  },
+  start: 1,
+  step: 0.1,
+  connect: 'lower',
+  format: {
+    to: function (value) {
+      if (Number.isInteger(value)) {
+        return value.toFixed(0);
+      }
+      return value.toFixed(1);
+    },
+    from: function (value) {
+      return parseFloat(value);
+    },
+  },
+});
+sliderElement.classList.add('visually-hidden');
+
+const changesValueFilter = (parameter, unit) => {
+  sliderElement.noUiSlider.on('update', () => {
+    effectsValue.value = sliderElement.noUiSlider.get();
+    imgUploadPreview.style.filter = `${parameter}(${effectsValue.value}${unit})`;
+  });
+};
+
+effectsRadioButtonAll.forEach((effectsRadioButton) => {
+  effectsRadioButton.addEventListener('input', (evt) => {
+    imgUploadPreview.className = '';
+    const classImg = evt.target.parentElement.children[1].children[0].getAttribute('class').replace('effects__preview  ', '');
+    imgUploadPreview.classList.add(`${classImg}`);
+
+    if (classImg === 'effects__preview--none') {
+      sliderElement.classList.add('visually-hidden');
+    }
+
+    if (classImg === 'effects__preview--chrome') {
+      sliderElement.classList.remove('visually-hidden');
+      sliderElement.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 1,
+        },
+        start: 1,
+        step: 0.1,
+      });
+      selectedFilter.style.filter = 'none';
+      changesValueFilter('grayscale', '');
+    }
+
+    if (classImg === 'effects__preview--sepia') {
+      sliderElement.classList.remove('visually-hidden');
+      sliderElement.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 1,
+        },
+        start: 1,
+        step: 0.1,
+      });
+      changesValueFilter('sepia', '');
+    }
+
+    if (classImg === 'effects__preview--marvin') {
+      sliderElement.classList.remove('visually-hidden');
+      sliderElement.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 100,
+        },
+        start: 100,
+        step: 1,
+      });
+      changesValueFilter('invert', '%');
+    }
+
+    if (classImg === 'effects__preview--phobos') {
+      sliderElement.classList.remove('visually-hidden');
+      sliderElement.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 3,
+        },
+        start: 3,
+        step: 0.1,
+      });
+      changesValueFilter('blur', 'px');
+    }
+
+    if (classImg === 'effects__preview--heat') {
+      sliderElement.classList.remove('visually-hidden');
+      sliderElement.noUiSlider.updateOptions({
+        range: {
+          min: 1,
+          max: 3,
+        },
+        start: 3,
+        step: 0.1,
+      });
+      changesValueFilter('brightness', '');
+    }
+  });
+});
