@@ -19,8 +19,8 @@ const getIdentifier = () => {
 };
 
 const getIdentifierComment = () => {
-  identifierComment = getRandomInteger(1, 1000);
-  if (IDComment.length >= 1000) {
+  identifierComment = getRandomInteger(1, 20);
+  if (IDComment.length >= 20) {
     return 'количество комментариев кончилось, очистите кэш';
   }
   while (IDComment.includes(identifierComment)) {
