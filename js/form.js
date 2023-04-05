@@ -197,7 +197,6 @@ effectsRadioButtonAll.forEach((effectsRadioButton) => {
         start: 1,
         step: 0.1,
       });
-      selectedFilter.style.filter = 'none';
       changesValueFilter('grayscale', '');
     }
 
