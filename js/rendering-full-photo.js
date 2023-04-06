@@ -101,3 +101,4 @@ const bigPictureClose = () => {
 bigPictureCloseButton.addEventListener('click', () => {
   bigPictureClose();
 });
+
