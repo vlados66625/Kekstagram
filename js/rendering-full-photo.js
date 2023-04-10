@@ -90,7 +90,7 @@ export const bigPictureOpen = (dataPhoto) => {
   downloadCommentButton.addEventListener('click', loadingComments);
 };
 
-const bigPictureClose = () => {
+function bigPictureClose() {
   bigPicture.classList.add('hidden');
   body.classList.remove('modal-open');
   clearBigPictureCommentsList();

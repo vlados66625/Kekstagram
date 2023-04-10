@@ -1,7 +1,7 @@
 import { createPicture } from './picture.js';
 import { bigPictureOpen } from './rendering-full-photo.js';
 import { uploadFileInput, openForm } from './form.js';
-import './api.js';
+import { getData } from './api.js';
 
 const picturesFragment = document.createDocumentFragment();
 
@@ -11,16 +11,13 @@ const handleClickImage = (dataPhoto) => {
   bigPictureOpen(dataPhoto);
 };
 
-fetch('https://28.javascript.pages.academy/kekstagram/data')
-  .then((response) => response.json())
+getData()
   .then((data) => {
-    console.log(data)
-    data.forEach((datas) => {
-      const newPhoto = createPicture(datas, handleClickImage);
-      picturesFragment.appendChild(newPhoto);
+    data.forEach((dataInfo) => {
+      const newPhoto = createPicture(dataInfo, handleClickImage);
+      picturesFragment.append(newPhoto);
     });
+    listPictures.append(picturesFragment);
   });
-
-listPictures.appendChild(picturesFragment);
 
 uploadFileInput.addEventListener('change', openForm);
