@@ -1,3 +1,5 @@
+import { errorBlock } from './util.js';
+import { sendData } from './api.js';
 import { body } from './rendering-full-photo.js';
 import { isEscapeKey } from './util.js';
 export const uploadFileInput = document.querySelector('#upload-file');
@@ -6,6 +8,8 @@ const closeFormButton = editFormPopup.querySelector('#upload-cancel');
 const imgForm = document.querySelector('.img-upload__form');
 const hashtag = imgForm.querySelector('.text__hashtags');
 const commentPhoto = imgForm.querySelector('.text__description');
+const successMessage = document.querySelector('#success').content.querySelector('.success');
+const buttonSubmit = document.querySelector('.img-upload__submit');
 // scale
 const scaleSmallerButton = editFormPopup.querySelector('.scale__control--smaller');
 const scaleBiggerButton = editFormPopup.querySelector('.scale__control--bigger');
@@ -44,6 +48,32 @@ const scaleBigger = () => {
   scaleValue.value = `${scale}%`;
 };
 
+// блок об успешной отправки данных
+const closeModalWindow = () => {
+  body.removeChild(successMessage);
+  document.removeEventListener('keydown', closesPressingEscs);
+};
+
+function closesPressingEscs(evt) {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeModalWindow();
+  }
+}
+
+const openModalWindow = () => {
+  body.append(successMessage);
+  const successButton = document.querySelector('.success__button');
+  document.addEventListener('keydown', closesPressingEscs);
+  successButton.addEventListener('click', closeModalWindow);
+  body.addEventListener('click', (evt) => {
+    if (evt.target.contains(successMessage)) {
+      closeModalWindow();
+    }
+  });
+};
+
+// основная форма
 function closeForm() {
   scale = 100;
   imgUploadPreview.className = '';
@@ -121,6 +151,7 @@ const checksValidQuantity = () => {
 const pristine = new Pristine(imgForm, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
+  errorTextClass: 'img-upload__field-wrapper',
 });
 
 pristine.addValidator(
@@ -141,10 +172,36 @@ pristine.addValidator(
   'Хэштегов не должно быть больше 5'
 );
 
-pristine.addValidator(
-  commentPhoto,
-  'Максимальная длина комментария - 140 символов'
-);
+const buttonSubmitBlocking = () => {
+  buttonSubmit.disabled = true;
+  buttonSubmit.textContent = 'Опубликовывыется';
+};
+
+const buttonSubmitUnblocking = () => {
+  buttonSubmit.disabled = false;
+  buttonSubmit.textContent = 'Опубликовать';
+};
+
+
+const setUserFormSubmit = (onSuccess, onSuccessMessage) => {
+  imgForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+
+    if (isValid) {
+      buttonSubmitBlocking();
+      sendData(new FormData(evt.target))
+        .then(onSuccess)
+        .then(onSuccessMessage)
+        .catch((err) => {
+          errorBlock(err.message);
+        })
+        .finally(buttonSubmitUnblocking);
+    }
+  });
+};
+
+setUserFormSubmit(closeForm, openModalWindow);
 
 // slider
 
@@ -253,3 +310,5 @@ effectsRadioButtonAll.forEach((effectsRadioButton) => {
     }
   });
 });
+
+
