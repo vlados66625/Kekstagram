@@ -10,6 +10,7 @@ const hashtag = imgForm.querySelector('.text__hashtags');
 const commentPhoto = imgForm.querySelector('.text__description');
 const successMessage = document.querySelector('#success').content.querySelector('.success');
 const buttonSubmit = document.querySelector('.img-upload__submit');
+const imgMini = document.querySelectorAll('.effects__preview');
 // scale
 const scaleSmallerButton = editFormPopup.querySelector('.scale__control--smaller');
 const scaleBiggerButton = editFormPopup.querySelector('.scale__control--bigger');
@@ -22,14 +23,19 @@ const effectsValue = sliderContainer.querySelector('.effect-level__value');
 const sliderElement = sliderContainer.querySelector('.effect-level__slider');
 const effectsRadioButtonAll = document.querySelectorAll('.effects__radio');
 
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+
 const hashtagValid = /^#[a-zа-яё0-9]{1,19}$/i;
 
-const closesPressingEsc = (evt) => {
+const closesPressingEsc = (cb, evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closeForm();
+    cb();
   }
 };
+
+const onFormKeydown = closesPressingEsc.bind(null, closeForm);
+const onMessageKeydown = closesPressingEsc.bind(null, closeModalWindow);
 
 const scaleSmaller = () => {
   if ((scale >= 50) && (scale <= 100)) {
@@ -49,22 +55,22 @@ const scaleBigger = () => {
 };
 
 // блок об успешной отправки данных
-const closeModalWindow = () => {
+function closeModalWindow() {
   body.removeChild(successMessage);
-  document.removeEventListener('keydown', closesPressingEscs);
-};
-
-function closesPressingEscs(evt) {
-  if (isEscapeKey(evt)) {
-    evt.preventDefault();
-    closeModalWindow();
-  }
+  document.removeEventListener('keydown', onMessageKeydown);
 }
+
+// function closesPressingEscs(evt) {
+//   if (isEscapeKey(evt)) {
+//     evt.preventDefault();
+//     closeModalWindow();
+//   }
+// }
 
 const openModalWindow = () => {
   body.append(successMessage);
   const successButton = document.querySelector('.success__button');
-  document.addEventListener('keydown', closesPressingEscs);
+  document.addEventListener('keydown', onMessageKeydown);
   successButton.addEventListener('click', closeModalWindow);
   body.addEventListener('click', (evt) => {
     if (evt.target.contains(successMessage)) {
@@ -83,7 +89,7 @@ function closeForm() {
   body.classList.remove('modal-open');
   imgForm.reset();
   closeFormButton.removeEventListener('click', closeForm);
-  document.removeEventListener('keydown', closesPressingEsc);
+  document.removeEventListener('keydown', onFormKeydown);
   scaleBiggerButton.removeEventListener('click', scaleBigger);
   scaleSmallerButton.removeEventListener('click', scaleSmaller);
 }
@@ -92,7 +98,7 @@ export const openForm = () => {
   editFormPopup.classList.remove('hidden');
   body.classList.add('modal-open');
   closeFormButton.addEventListener('click', closeForm);
-  document.addEventListener('keydown', closesPressingEsc);
+  document.addEventListener('keydown', onFormKeydown);
 
   const canselsHandlerEsc = (element) => {
     const stopAscentEsc = (evt) => {
@@ -114,6 +120,18 @@ export const openForm = () => {
 
   scaleBiggerButton.addEventListener('click', scaleBigger);
   scaleSmallerButton.addEventListener('click', scaleSmaller);
+
+  const file = uploadFileInput.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    imgUploadPreview.src = URL.createObjectURL(file);
+    imgMini.forEach((el) => {
+      el.style.backgroundImage = `url("${imgUploadPreview.src}")`;
+    });
+  }
 };
 
 uploadFileInput.addEventListener('change', openForm);
@@ -174,7 +192,7 @@ pristine.addValidator(
 
 const buttonSubmitBlocking = () => {
   buttonSubmit.disabled = true;
-  buttonSubmit.textContent = 'Опубликовывыется';
+  buttonSubmit.textContent = 'Опубликовывается';
 };
 
 const buttonSubmitUnblocking = () => {
