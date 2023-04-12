@@ -96,7 +96,7 @@ function bigPictureClose() {
   clearBigPictureCommentsList();
   document.removeEventListener('keydown', closesPressingEsc);
   downloadCommentButton.removeEventListener('click', loadingComments);
-};
+}
 
 bigPictureCloseButton.addEventListener('click', () => {
   bigPictureClose();
