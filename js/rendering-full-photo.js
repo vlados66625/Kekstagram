@@ -2,9 +2,7 @@ import { isEscapeKey } from './util.js';
 
 export const body = document.querySelector('body');
 const bigPicture = document.querySelector('.big-picture');
-const bigPictureImg = bigPicture
-  .querySelector('.big-picture__img')
-  .querySelector('img');
+const bigPictureImg = bigPicture.querySelector('.big-picture__img img');
 const bigPictureLikes = bigPicture.querySelector('.likes-count');
 const bigPictureCommentsNumber = bigPicture.querySelector('.comments-count');
 const bigPictureCommentsList = bigPicture.querySelector('.social__comments');
@@ -39,7 +37,7 @@ const addComment = (data) => {
   return commentItem;
 };
 
-const loadingComments = () => {
+const loadComments = () => {
   const commentsWill = commentDownload + 5;
   const newComment = (commentDownloads) => addComment(thisComments[commentDownloads]);
   if (commentsWill >= numberCommentAll) {
@@ -49,7 +47,7 @@ const loadingComments = () => {
     }
     downloadCommentButton.classList.add('hidden');
     document.querySelector('.social__comment-count').textContent = `${commentDownload} из ${numberCommentAll}`;
-    downloadCommentButton.removeEventListener('click', loadingComments);
+    downloadCommentButton.removeEventListener('click', loadComments);
     return;
   }
   for (commentDownload; commentDownload < commentsWill; commentDownload++) {
@@ -87,7 +85,7 @@ export const bigPictureOpen = (dataPhoto) => {
 
   body.classList.add('modal-open');
   document.addEventListener('keydown', closesPressingEsc);
-  downloadCommentButton.addEventListener('click', loadingComments);
+  downloadCommentButton.addEventListener('click', loadComments);
 };
 
 function bigPictureClose() {
@@ -95,7 +93,7 @@ function bigPictureClose() {
   body.classList.remove('modal-open');
   clearBigPictureCommentsList();
   document.removeEventListener('keydown', closesPressingEsc);
-  downloadCommentButton.removeEventListener('click', loadingComments);
+  downloadCommentButton.removeEventListener('click', loadComments);
 }
 
 bigPictureCloseButton.addEventListener('click', () => {

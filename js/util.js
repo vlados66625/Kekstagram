@@ -1,8 +1,8 @@
-const errorBlockTime = 5000;
+const showErrorBlockTime = 5000;
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-const errorBlock = (errorText) => {
+const showErrorBlock = (errorText) => {
   const errorFragment = document.createElement('div');
   errorFragment.style.zIndex = '100';
   errorFragment.style.position = 'absolute';
@@ -21,7 +21,7 @@ const errorBlock = (errorText) => {
 
   setTimeout(() => {
     errorFragment.remove();
-  }, errorBlockTime);
+  }, showErrorBlockTime);
 };
 
 const getRandomInteger = (a, b) => {
@@ -39,5 +39,5 @@ const debounce = (callback, timeoutDelay) => {
   };
 };
 
-export { getRandomInteger, isEscapeKey, errorBlock, debounce };
+export { getRandomInteger, isEscapeKey, showErrorBlock, debounce };
 

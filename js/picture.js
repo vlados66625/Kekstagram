@@ -49,6 +49,5 @@ export const renderPhotos = (data, filter = null) => {
     filter.classList.add('img-filters__button--active');
   }
 
-
   addsPhotos(data);
 };

@@ -1,4 +1,4 @@
-import { errorBlock } from './util.js';
+import { showErrorBlock } from './util.js';
 import { sendData } from './api.js';
 import { body } from './rendering-full-photo.js';
 import { isEscapeKey } from './util.js';
@@ -59,13 +59,6 @@ function closeModalWindow() {
   body.removeChild(successMessage);
   document.removeEventListener('keydown', onMessageKeydown);
 }
-
-// function closesPressingEscs(evt) {
-//   if (isEscapeKey(evt)) {
-//     evt.preventDefault();
-//     closeModalWindow();
-//   }
-// }
 
 const openModalWindow = () => {
   body.append(successMessage);
@@ -212,7 +205,7 @@ const setUserFormSubmit = (onSuccess, onSuccessMessage) => {
         .then(onSuccess)
         .then(onSuccessMessage)
         .catch((err) => {
-          errorBlock(err.message);
+          showErrorBlock(err.message);
         })
         .finally(buttonSubmitUnblocking);
     }
@@ -232,15 +225,13 @@ noUiSlider.create(sliderElement, {
   step: 0.1,
   connect: 'lower',
   format: {
-    to: function (value) {
+    to: (value) => {
       if (Number.isInteger(value)) {
         return value.toFixed(0);
       }
       return value.toFixed(1);
     },
-    from: function (value) {
-      return parseFloat(value);
-    },
+    from: (value) => parseFloat(value),
   },
 });
 sliderElement.classList.add('visually-hidden');
@@ -258,74 +249,142 @@ effectsRadioButtonAll.forEach((effectsRadioButton) => {
     const classImg = evt.target.parentElement.children[1].children[0].getAttribute('class').replace('effects__preview  ', '');
     imgUploadPreview.classList.add(`${classImg}`);
 
-    if (classImg === 'effects__preview--none') {
-      sliderElement.classList.add('visually-hidden');
+    switch (classImg) {
+      case 'effects__preview--none':
+        sliderElement.classList.add('visually-hidden');
+        imgUploadPreview.style.filter = 'none';
+        break;
+      case 'effects__preview--chrome':
+        sliderElement.classList.remove('visually-hidden');
+        sliderElement.noUiSlider.updateOptions({
+          range: {
+            min: 0,
+            max: 1,
+          },
+          start: 1,
+          step: 0.1,
+        });
+        changesValueFilter('grayscale', '');
+        break;
+      case 'effects__preview--sepia':
+        sliderElement.classList.remove('visually-hidden');
+        sliderElement.noUiSlider.updateOptions({
+          range: {
+            min: 0,
+            max: 1,
+          },
+          start: 1,
+          step: 0.1,
+        });
+        changesValueFilter('sepia', '');
+        break;
+      case 'effects__preview--marvin':
+        sliderElement.classList.remove('visually-hidden');
+        sliderElement.noUiSlider.updateOptions({
+          range: {
+            min: 0,
+            max: 100,
+          },
+          start: 100,
+          step: 1,
+        });
+        changesValueFilter('invert', '%');
+        break;
+      case 'effects__preview--phobos':
+        sliderElement.classList.remove('visually-hidden');
+        sliderElement.noUiSlider.updateOptions({
+          range: {
+            min: 0,
+            max: 3,
+          },
+          start: 3,
+          step: 0.1,
+        });
+        changesValueFilter('blur', 'px');
+        break;
+      case 'effects__preview--heat':
+        sliderElement.classList.remove('visually-hidden');
+        sliderElement.noUiSlider.updateOptions({
+          range: {
+            min: 1,
+            max: 3,
+          },
+          start: 3,
+          step: 0.1,
+        });
+        changesValueFilter('brightness', '');
+        break;
     }
 
-    if (classImg === 'effects__preview--chrome') {
-      sliderElement.classList.remove('visually-hidden');
-      sliderElement.noUiSlider.updateOptions({
-        range: {
-          min: 0,
-          max: 1,
-        },
-        start: 1,
-        step: 0.1,
-      });
-      changesValueFilter('grayscale', '');
-    }
+    // if (classImg === 'effects__preview--none') {
+    //   sliderElement.classList.add('visually-hidden');
+    //   imgUploadPreview.style.filter = 'none';
+    // }
 
-    if (classImg === 'effects__preview--sepia') {
-      sliderElement.classList.remove('visually-hidden');
-      sliderElement.noUiSlider.updateOptions({
-        range: {
-          min: 0,
-          max: 1,
-        },
-        start: 1,
-        step: 0.1,
-      });
-      changesValueFilter('sepia', '');
-    }
+    // if (classImg === 'effects__preview--chrome') {
+    //   sliderElement.classList.remove('visually-hidden');
+    //   sliderElement.noUiSlider.updateOptions({
+    //     range: {
+    //       min: 0,
+    //       max: 1,
+    //     },
+    //     start: 1,
+    //     step: 0.1,
+    //   });
+    //   changesValueFilter('grayscale', '');
+    // }
 
-    if (classImg === 'effects__preview--marvin') {
-      sliderElement.classList.remove('visually-hidden');
-      sliderElement.noUiSlider.updateOptions({
-        range: {
-          min: 0,
-          max: 100,
-        },
-        start: 100,
-        step: 1,
-      });
-      changesValueFilter('invert', '%');
-    }
+    // if (classImg === 'effects__preview--sepia') {
+    //   sliderElement.classList.remove('visually-hidden');
+    //   sliderElement.noUiSlider.updateOptions({
+    //     range: {
+    //       min: 0,
+    //       max: 1,
+    //     },
+    //     start: 1,
+    //     step: 0.1,
+    //   });
+    //   changesValueFilter('sepia', '');
+    // }
 
-    if (classImg === 'effects__preview--phobos') {
-      sliderElement.classList.remove('visually-hidden');
-      sliderElement.noUiSlider.updateOptions({
-        range: {
-          min: 0,
-          max: 3,
-        },
-        start: 3,
-        step: 0.1,
-      });
-      changesValueFilter('blur', 'px');
-    }
+    // if (classImg === 'effects__preview--marvin') {
+    //   sliderElement.classList.remove('visually-hidden');
+    //   sliderElement.noUiSlider.updateOptions({
+    //     range: {
+    //       min: 0,
+    //       max: 100,
+    //     },
+    //     start: 100,
+    //     step: 1,
+    //   });
+    //   changesValueFilter('invert', '%');
+    // }
 
-    if (classImg === 'effects__preview--heat') {
-      sliderElement.classList.remove('visually-hidden');
-      sliderElement.noUiSlider.updateOptions({
-        range: {
-          min: 1,
-          max: 3,
-        },
-        start: 3,
-        step: 0.1,
-      });
-      changesValueFilter('brightness', '');
-    }
+    // if (classImg === 'effects__preview--phobos') {
+    //   sliderElement.classList.remove('visually-hidden');
+    //   sliderElement.noUiSlider.updateOptions({
+    //     range: {
+    //       min: 0,
+    //       max: 3,
+    //     },
+    //     start: 3,
+    //     step: 0.1,
+    //   });
+    //   changesValueFilter('blur', 'px');
+    // }
+
+    // if (classImg === 'effects__preview--heat') {
+    //   sliderElement.classList.remove('visually-hidden');
+    //   sliderElement.noUiSlider.updateOptions({
+    //     range: {
+    //       min: 1,
+    //       max: 3,
+    //     },
+    //     start: 3,
+    //     step: 0.1,
+    //   });
+    //   changesValueFilter('brightness', '');
+    // }
   });
 });
 
